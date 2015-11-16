@@ -1,54 +1,84 @@
 <?php
 
-/**
- * Project: Conways-game-of-life
- * User: peterwilkins
- * Date: 11/11/2015
- * Time: 13:41
- */
-class Cell
+function tick(&$liveList)
 {
+    $newLiveList = [];
+    $deadList = [];
+    foreach ($liveList as $liveCell) {
+        foreach (getNeighbours($liveCell) as $unknownCell) {
+            if ( ! in_array($unknownCell, $newLiveList) && ! in_array($unknownCell, $deadList)) {
+                if (shouldCellLive($liveList, $unknownCell[0], $unknownCell[1])) {
 
-    public $state;
-    public $newState;
-
-    /**
-     * Cell constructor.
-     * @param $state
-     */
-    public function __construct($state)
-    {
-        $this->state = $state;
-    }
-
-    public function setNewState($liveNeighbours)
-    {
-        if (($this->state && ($liveNeighbours == 2 || $liveNeighbours == 3)) ||
-            ( ! $this->state && $liveNeighbours == 3)
-        ) {
-            $this->newState = true;
-
-            return true;
-        } else {
-            $this->newState = false;
+                    $newLiveList[] = $unknownCell;
+                } else {
+                    $deadList[] = $unknownCell;
+                }
+            }
         }
+    }
+    array_multisort($newLiveList);
+    return $newLiveList;
+}
 
-        return $this->newState;
+function getNeighbours($liveCell)
+{
+    $x = $liveCell[0];
+    $y = $liveCell[1];
 
+    return [
+        [$x - 1, $y - 1],
+        [$x - 1, $y],
+        [$x - 1, $y + 1],
+        [$x, $y - 1],
+        [$x, $y + 1],
+        [$x + 1, $y - 1],
+        [$x + 1, $y],
+        [$x + 1, $y + 1],
+    ];
+}
+
+
+function shouldCellLive(&$liveList, $x, $y)
+{
+    $alive = false;
+    if (in_array([$x, $y], $liveList)) {
+        $alive = true;
+    }
+    $liveNeighbours = 0;
+    if (in_array([$x - 1, $y - 1], $liveList)) {
+        $liveNeighbours += 1;
+    }
+    if (in_array([$x - 1, $y], $liveList)) {
+        $liveNeighbours += 1;
+    }
+    if (in_array([$x - 1, $y + 1], $liveList)) {
+        $liveNeighbours += 1;
+    }
+    if (in_array([$x, $y - 1], $liveList)) {
+        $liveNeighbours += 1;
+    }
+    if (in_array([$x, $y + 1], $liveList)) {
+        $liveNeighbours += 1;
+    }
+    if (in_array([$x + 1, $y - 1], $liveList)) {
+        $liveNeighbours += 1;
+    }
+    if (in_array([$x + 1, $y], $liveList)) {
+        $liveNeighbours += 1;
+    }
+    if (in_array([$x + 1, $y + 1], $liveList)) {
+        $liveNeighbours += 1;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getState()
-    {
-        return $this->state;
+    if ($alive && ($liveNeighbours == 2 || $liveNeighbours == 3) ||
+        ( ! $alive && $liveNeighbours == 3)
+    ) {
+        $alive = true;
+    } else {
+        $alive = false;
     }
 
-    public function tick()
-    {
-        $this->state = $this->newState;
-    }
-
+    return $alive;
 
 }
+

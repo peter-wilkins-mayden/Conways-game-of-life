@@ -14,7 +14,7 @@ class Grid
     {
         for ($x = 0; $x<count($grid); $x++) {
             for ($y = 0; $y<count($grid[$x]); $y++) {
-                 = new Cell($grid[$x][$y]);
+                $this->grid[$x][$y] = new Cell($grid[$x][$y]);
             }
         }
     }
@@ -24,9 +24,11 @@ class Grid
 
         for ($x = 0; $x<count($this->grid); $x++) {
             for ($y = 0; $y<count($this->grid[$x]); $y++) {
-                $this->grid[$x][$y]->setNewState($this->liveNeighbours($x, $y));
+               $printGrid[$x][$y] = $this->grid[$x][$y]->setNewState($this->liveNeighbours($x, $y));
+                $this->grid[$x][$y]->tick();
             }
         }
+        return $printGrid;
     }
 
     public function liveNeighbours($x, $y)

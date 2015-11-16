@@ -8,106 +8,74 @@
 
 
 include_once '../src/conway.php';
-include_once '../src/Grid.php';
 
 
 class ConwayTest extends \PHPUnit_Framework_TestCase
 {
 
-    public function test_live_with_0_live_cells_should_die()
+    public function test_alive_with_0_live_neighbours_should_die()
     {
-        $cell = new Cell(true);
-        $this->assertEquals(false, $cell->setNewState(0));
+        $liveList = [[1, 1],];
+        $this->assertEquals(false, shouldCellLive($liveList, 1, 1));
     }
 
-    public function test_live_with_2_live_cells_should_live()
+    public function test_alive_with_1_live_neighbours_should_die()
     {
-        $cell = new Cell(true);
-        $this->assertEquals(true, $cell->setNewState(2));
+        $liveList = [[1, 1], [1, 0],];
+        $this->assertEquals(false, shouldCellLive($liveList, 1, 1));
     }
 
-    public function test_live_with_4_live_cells_should_die()
+    public function test_alive_with_2_live_neighbours_should_live()
     {
-        $cell = new Cell(true);
-        $this->assertEquals(false, $cell->setNewState(4));
-    }
-
-    public function test_dead_with_3_live_cells_should_live()
-    {
-        $cell = new Cell(false);
-        $this->assertEquals(true, $cell->setNewState(3));
-    }
-
-    public function test_dead_with_1_live_cells_should_dead()
-    {
-        $cell = new Cell(false);
-        $this->assertEquals(false, $cell->setNewState(1));
-    }
-
-    public function test_live_with_3_live_cells_should_live()
-    {
-        $cell = new Cell(true);
-        $this->assertEquals(true, $cell->setNewState(3));
-    }
-
-    public function test_live_with_1_should_die()
-    {
-        $cell = new Cell(true);
-        $this->assertEquals(false, $cell->setNewState(1));
-    }
-
-    public function test_number_of_live_neighbours_is_0()
-    {
-        $grid = new Grid([
-            [0, 0, 0,],
-            [0, 1, 0,],
-            [0, 0, 0,],
-        ]);
-        $this->assertEquals(0, $grid->liveNeighbours(1, 1));
-    }
-
-    public function test_number_of_live_neighbours_is_2()
-    {
-        $grid = new Grid([
-            [1, 0, 1,],
-            [0, 0, 0,],
-            [0, 0, 0,],
-        ]);
-        $this->assertEquals(2, $grid->liveNeighbours(1, 1));
-    }
-
-    public function test_eight_neighbours()
-    {
-
-        $grid = new Grid([
-            [1, 1, 1,],
-            [1, 0, 1,],
-            [1, 1, 1,],
-        ]);
-        $this->assertEquals(8, $grid->liveNeighbours(1, 1));
-    }
-
-    public function test_tick()
-    {
-
-        $grid = new Grid([
-            [0, 1, 0,],
-            [0, 1, 0,],
-            [0, 1, 0,],
-        ]);
-        $this->assertEquals([
-            [0, 1, 0,],
-            [0, 1, 0,],
-            [0, 1, 0,],
-        ], $grid->tick());
+        $liveList = [[1, 1], [1, 0], [1, 2],];
+        $this->assertEquals(true, shouldCellLive($liveList, 1, 1));
     }
 
 
+    public function test_alive_with_3_live_neighbours_live()
+    {
+        $liveList = [[1, 1], [1, 0], [1, 2], [2, 2],];
+        $this->assertEquals(true, shouldCellLive($liveList, 1, 1));
+    }
 
+    public function test_alive_with_4_live_neighbours_should_die()
+    {
+        $liveList = [[1, 1], [1, 0], [1, 2], [2, 2], [0, 0],];
+        $this->assertEquals(false, shouldCellLive($liveList, 1, 1));
+    }
 
-    //    public function test_live_cell_should_live()
-//    {
-//        $this->assertEquals(true, getNewState(2));
-//    }
-    //public function test_dead_cell_wi
+    public function test_dead_with_1_live_neighbours_should_stay_dead()
+    {
+        $liveList = [[0, 0],];
+        $this->assertEquals(false, shouldCellLive($liveList, 1, 1));
+    }
+
+    public function test_dead_with_2_live_neighbours_should_stay_dead()
+    {
+        $liveList = [[0, 0], [1, 1],];
+        $this->assertEquals(false, shouldCellLive($liveList, 1, 1));
+    }
+
+    public function test_dead_with_3_live_neighbours_should_live()
+    {
+        $liveList = [[1, 0], [1, 2], [2, 2],];
+        $this->assertEquals(true, shouldCellLive($liveList, 1, 1));
+    }
+
+// todo: should dead with 4 neighbours live?
+
+    public function test_tick_returns_new_liveList()
+    {
+        $liveList = [[1, 1], [1, 0], [1, 2],];
+        $this->assertEquals([[0, 1], [1, 1], [2, 1],], tick($liveList));
+    }
+    public function test_tick_returns_new_liveList2()
+    {
+        $liveList = [[0, 0], [0, 2], [2, 0],];
+        $this->assertEquals([[1, 1],], tick($liveList));
+    }
+    public function test_get_neighbours()
+    {
+        $this->assertEquals([[4,4],[4,5],[4,6],[5,4],[5,6],[6,4],[6,5],[6,6],], getNeighbours([5,5]));
+    }
 }
