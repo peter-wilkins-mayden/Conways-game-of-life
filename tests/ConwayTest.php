@@ -61,8 +61,11 @@ class ConwayTest extends \PHPUnit_Framework_TestCase
         $liveList = [[1, 0], [1, 2], [2, 2],];
         $this->assertEquals(true, shouldCellLive($liveList, 1, 1));
     }
-
-// todo: should dead with 4 neighbours live?
+    public function test_dead_with_4_live_neighbours_should_stay_dead()
+    {
+        $liveList = [[0, 0], [1, 0], [1, 2], [2, 2],];
+        $this->assertEquals(false, shouldCellLive($liveList, 1, 1));
+    }
 
     public function test_tick_returns_new_liveList()
     {
